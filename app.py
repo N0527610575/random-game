@@ -7,6 +7,7 @@
 # טיפול במקרה שהשחקן כתב אותיות או סימנים
 from flask import Flask
 from random import randint
+import os
 
 
 app = Flask(__name__, template_folder='.')
@@ -69,7 +70,8 @@ def play(name,num):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 
 
 
