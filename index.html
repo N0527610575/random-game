@@ -23,7 +23,6 @@
             color: #fff;
         }
 
-        /* מכולה ראשית - זכוכית מטושטשת */
         .glass-card {
             position: relative;
             width: 380px;
@@ -108,7 +107,6 @@
             align-items: center;
         }
 
-        /* המספר שמתנפץ */
         .shatter-num {
             position: absolute;
             font-size: 3rem;
@@ -124,20 +122,9 @@
         }
 
         @keyframes shatterAnim {
-            0% {
-                transform: scale(1) rotate(0deg);
-                opacity: 1;
-                filter: blur(0px);
-            }
-            50% {
-                transform: scale(1.4) rotate(5deg);
-                filter: blur(2px);
-            }
-            100% {
-                transform: scale(2) rotate(-15deg);
-                opacity: 0;
-                filter: blur(12px);
-            }
+            0% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0px); }
+            50% { transform: scale(1.4) rotate(5deg); filter: blur(2px); }
+            100% { transform: scale(2) rotate(-15deg); opacity: 0; filter: blur(12px); }
         }
 
         .message {
@@ -148,24 +135,10 @@
             transition: all 0.5s ease;
         }
 
-        .message.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .message.wrong {
-            color: #ff4d6d;
-            text-shadow: 0 0 10px rgba(255, 77, 109, 0.4);
-        }
-
-        .message.win {
-            color: #64ffda;
-            text-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
-        }
-
-        .message.error {
-            color: #ffb703;
-        }
+        .message.show { opacity: 1; transform: translateY(0); }
+        .message.wrong { color: #ff4d6d; text-shadow: 0 0 10px rgba(255, 77, 109, 0.4); }
+        .message.win { color: #64ffda; text-shadow: 0 0 10px rgba(100, 255, 218, 0.4); }
+        .message.error { color: #ffb703; }
 
         .shard {
             position: absolute;
@@ -209,35 +182,34 @@
 
             if (!num) return;
 
-            // 1. איפוס הודעות
             messageEl.className = "message";
             messageEl.textContent = "";
 
-            // 2. יצירת אלמנט המספר המתנפץ
             const shatterEl = document.createElement("div");
             shatterEl.className = "shatter-num";
             shatterEl.textContent = num;
             resultBox.appendChild(shatterEl);
 
-            // 3. רסיסי זכוכית
             createGlassShards(resultBox);
 
-            // 4. הפעלת האנימציה
             setTimeout(() => {
                 shatterEl.classList.add("shatter");
             }, 50);
 
-            // 5. קריאה לנתיב ה-Flask המקורי שלך (http://127.0.0.1:5000/game/name/num)
             try {
+                // פנייה בנתיב יחסי לשרת
                 const response = await fetch(`/game/${encodeURIComponent(name)}/${encodeURIComponent(num)}`);
-                const responseText = await response.text(); // לקרוא כטקסט פשוט מהפייתון
 
-                // 6. הצגת ההודעה שמוחזרת מ-post_massag
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+
+                const responseText = await response.text();
+
                 setTimeout(() => {
                     shatterEl.remove();
                     messageEl.textContent = responseText;
 
-                    // עיצוב הצבע לפי התוכן של ההודעה
                     if (responseText.includes("win")) {
                         messageEl.classList.add("show", "win");
                     } else if (responseText.includes("sorry")) {
@@ -250,7 +222,7 @@
             } catch (err) {
                 setTimeout(() => {
                     shatterEl.remove();
-                    messageEl.textContent = "ודא ששרת הפייתון מורץ בטרמינל";
+                    messageEl.textContent = "מתחבר לשרת... נסה שוב בעוד כמה שניות";
                     messageEl.classList.add("show", "error");
                 }, 400);
             }
