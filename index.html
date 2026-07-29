@@ -229,7 +229,7 @@
 
             // 5. קריאה לנתיב ה-Flask המקורי שלך (http://127.0.0.1:5000/game/name/num)
             try {
-                const response = await fetch(`http://127.0.0.1:5000/game/${encodeURIComponent(name)}/${encodeURIComponent(num)}`);
+                const response = await fetch(`/game/${encodeURIComponent(name)}/${encodeURIComponent(num)}`);
                 const responseText = await response.text(); // לקרוא כטקסט פשוט מהפייתון
 
                 // 6. הצגת ההודעה שמוחזרת מ-post_massag
